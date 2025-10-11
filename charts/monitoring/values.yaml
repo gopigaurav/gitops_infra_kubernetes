@@ -1,0 +1,20 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+  grafana:
+    enabled: true
+    adminPassword: admin
+prometheus-adapter:
+  rules:
+    custom:
+      - seriesQuery: 'kafka_consumergroup_lag'
+        resources:
+          overrides: {}
+        name:
+          matches: "^(.*)"
+          as: "kafka_consumergroup_lag"
+        metricsQuery: 'max(kafka_consumergroup_lag{<<.LabelMatchers>>})'
+kafka-exporter:
+  enabled: true

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: monitoring
+version: 0.1.0
+dependencies:
+  - name: kube-prometheus-stack
+    version: 45.0.0    # or the desired stable version
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: prometheus-adapter
+    version: 4.14.0
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: kafka-exporter
+    version: 2.4.0
+    repository: https://prometheus-community.github.io/helm-charts

@@ -1,0 +1,9 @@
+kafka:
+  kraft:
+    enabled: true
+  controller:
+    replicaCount: 1
+  broker:
+    replicaCount: 1
+  persistence:
+    enabled: false

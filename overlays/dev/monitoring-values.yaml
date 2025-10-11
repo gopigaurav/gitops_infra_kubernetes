@@ -1,0 +1,9 @@
+kube-prometheus-stack:
+  grafana:
+    adminPassword: "admin"
+    service:
+      type: NodePort
+prometheus-adapter:
+  enabled: true
+kafka-exporter:
+  enabled: true

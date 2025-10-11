@@ -1,0 +1,13 @@
+replicaCount: 3
+image:
+  repository: REPLACE_ME_REGISTRY/producer
+  tag: prod-latest
+service:
+  type: ClusterIP
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"

@@ -1,0 +1,16 @@
+{{- if .Values.prometheus.servicemonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: producer-servicemonitor
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: producer
+  endpoints:
+    - port: http
+      path: {{ .Values.prometheus.servicemonitor.path }}
+      interval: {{ .Values.prometheus.servicemonitor.interval }}
+{{- end }}

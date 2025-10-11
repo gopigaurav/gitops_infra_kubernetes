@@ -1,0 +1,12 @@
+replicaCount: 2
+image:
+  repository: REPLACE_ME_REGISTRY/consumer
+  tag: prod-latest
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 20
+  kafkaLag:
+    enabled: true
+    metricName: kafka_consumergroup_lag
+    threshold: 100

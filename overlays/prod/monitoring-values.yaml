@@ -1,0 +1,9 @@
+kube-prometheus-stack:
+  grafana:
+    adminPassword: "REPLACE_ME_SECURE_PASSWORD"
+    service:
+      type: LoadBalancer
+prometheus-adapter:
+  enabled: true
+kafka-exporter:
+  enabled: true

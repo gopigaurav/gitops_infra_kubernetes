@@ -1,0 +1,17 @@
+kafka:
+  kraft:
+    enabled: true
+  controller:
+    replicaCount: 3
+  broker:
+    replicaCount: 3
+  persistence:
+    enabled: true
+    size: 50Gi
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+    limits:
+      cpu: "4"
+      memory: "8Gi"

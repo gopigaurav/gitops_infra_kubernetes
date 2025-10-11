@@ -1,0 +1,11 @@
+replicaCount: 1
+image:
+  repository: REPLACE_ME_REGISTRY/consumer
+  tag: dev-latest
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  cpuUtilizationPercent: 60
+  kafkaLag:
+    enabled: false

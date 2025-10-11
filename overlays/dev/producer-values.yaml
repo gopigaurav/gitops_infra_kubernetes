@@ -1,0 +1,6 @@
+replicaCount: 1
+image:
+  repository: REPLACE_ME_REGISTRY/producer
+  tag: dev-latest
+service:
+  type: ClusterIP
