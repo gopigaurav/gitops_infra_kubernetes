@@ -1,0 +1,17 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30000
+        hostPort: 8080   # Jenkins
+      - containerPort: 30001
+        hostPort: 8081   # ArgoCD
+      - containerPort: 30010
+        hostPort: 30010  # Producer
+      - containerPort: 30011
+        hostPort: 30011  # Consumer
+
+      # if you need to expose the kafka outside the cluster
+      # - containerPort: 9092
+      #   hostPort: 9092   # Kafka Broker

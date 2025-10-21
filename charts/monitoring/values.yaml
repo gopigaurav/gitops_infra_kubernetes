@@ -16,5 +16,17 @@ prometheus-adapter:
           matches: "^(.*)"
           as: "kafka_consumergroup_lag"
         metricsQuery: 'max(kafka_consumergroup_lag{<<.LabelMatchers>>})'
-kafka-exporter:
+# kafka-exporter:
+#   enabled: true
+
+prometheus-kafka-exporter:
   enabled: true
+  podSecurityPolicy:
+    enabled: false   
+  kafkaServer:
+    - "my-kafka-broker:9092"  # Replace with your Kafka broker address
+  prometheus:
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: "monitoring"

@@ -1,9 +1,26 @@
 kube-prometheus-stack:
+  installCRDs: true        # install CRDs
   grafana:
-    adminPassword: "REPLACE_ME_SECURE_PASSWORD"
+    adminPassword: "admin"
     service:
-      type: LoadBalancer
+      type: NodePort
+  podSecurityPolicy:
+    enabled: false          # disable PSP entirely
+
 prometheus-adapter:
   enabled: true
-kafka-exporter:
-  enabled: true
+  podSecurityPolicy:
+    enabled: false          # disable PSP
+
+# prometheus-kafka-exporter:
+#   enabled: true
+#   podSecurityPolicy:
+#     enabled: false      # disable PSP for Kubernetes >=1.25
+#   kafkaServers:
+#     - "my-kafka-broker:9092"
+#   prometheus:
+#     serviceMonitor:
+#       enabled: true
+#       additionalLabels:
+#         release: "monitoring"
+

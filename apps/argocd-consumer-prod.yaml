@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: consumer-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/<your-org>/infra-gitops.git
+    targetRevision: main
+    path: charts/consumer
+    helm:
+      valueFiles:
+        - overlays/prod/consumer-values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: consumer-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

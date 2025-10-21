@@ -1,0 +1,39 @@
+# argocd-values.yaml
+
+server:
+  service:
+    type: NodePort
+    nodePort: 30081   # Access ArgoCD UI at localhost:30081
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - argocd.local
+    tls: []
+
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+repoServer:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+dex:
+  enabled: false   # Disable dex for local dev
+
+configs:
+  cm:
+    # Allow ArgoCD to auto-sync apps from Git
+    application.instanceLabelKey: app.kubernetes.io/instance

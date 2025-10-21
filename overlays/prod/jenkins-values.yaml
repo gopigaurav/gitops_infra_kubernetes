@@ -1,0 +1,7 @@
+controller:
+  ingress:
+    hostName: jenkins.prod.example.com
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi

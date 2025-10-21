@@ -7,3 +7,25 @@ kafka:
     replicaCount: 1
   persistence:
     enabled: false
+
+  # Override the default Bitnami image with the legacy image
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/kafka
+    tag: 4.0.0-debian-12-r10
+
+  # Init container using bash from the legacy image
+  initContainers:
+    - name: custom-kafka-init
+      image: docker.io/bitnamilegacy/kafka:4.0.0-debian-12-r10
+      command: ["/bin/bash", "-c", "echo 'Initializing Kafka broker and controller...'"]
+      # optional volume mounts if you have init scripts
+      # volumeMounts:
+      #   - name: scripts
+      #     mountPath: /scripts
+      #     subPath: kafka-init.sh
+      #     readOnly: true
+
+global:
+  security:
+    allowInsecureImages: true

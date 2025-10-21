@@ -6,13 +6,18 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'REPLACE_ME_GITOPS_REPO'
-    targetRevision: HEAD
-    path: overlays/dev
+    repoURL: https://github.com/<your-org>/infra-gitops.git
+    targetRevision: main
+    path: charts/producer
+    helm:
+      valueFiles:
+        - overlays/dev/producer-values.yaml
   destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: dev
+    server: https://kubernetes.default.svc
+    namespace: producer-dev
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

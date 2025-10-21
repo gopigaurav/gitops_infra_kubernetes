@@ -1,0 +1,31 @@
+replicaCount: 1
+image:
+  repository: REPLACE_ME_REGISTRY/producer # replace with repo
+  tag: latest
+service:
+  type: ClusterIP
+  port: 80
+containerPort: 3000
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+livenessProbe:
+  path: /healthz
+  port: 3000
+
+readinessProbe:
+  path: /healthz
+  port: 3000
+
+prometheus:
+  servicemonitor:
+    enabled: true
+    interval: 15s
+    path: /metrics
+    port: http

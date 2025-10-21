@@ -1,0 +1,3 @@
+controller:
+  ingress:
+    hostName: jenkins.dev.example.com

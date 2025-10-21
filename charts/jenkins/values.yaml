@@ -1,0 +1,32 @@
+controller:
+  image:
+    tag: lts-jdk17
+  adminUser: admin
+  adminPassword: admin123
+
+  installPlugins:
+    - kubernetes:4213.vb_3c3ff8dfe86
+    - workflow-aggregator:590.v6a_d052e5a_a_b_5
+    - git:5.2.1
+    - configuration-as-code:1775.v810dc950b_514
+    - github:1.39.0
+    - blueocean:1.27.11
+    - credentials-binding:604.vb_64480b_c56ca_
+    - docker-workflow:580.vc0c340686b_54
+
+  serviceType: ClusterIP
+  ingress:
+    enabled: true
+    hostName: jenkins.dev.example.com
+    annotations:
+      kubernetes.io/ingress.class: kong
+      konghq.com/strip-path: "true"
+    tls:
+      - secretName: jenkins-tls
+        hosts:
+          - jenkins.dev.example.com
+
+persistence:
+  enabled: true
+  storageClass: standard
+  size: 10Gi

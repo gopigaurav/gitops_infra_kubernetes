@@ -1,6 +1,17 @@
 replicaCount: 1
 image:
-  repository: REPLACE_ME_REGISTRY/producer
+  repository: producer
   tag: dev-latest
+  pullPolicy: IfNotPresent
 service:
-  type: ClusterIP
+  type: NodePort
+  nodePort: 30010
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 15s
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  cpuUtilization: 50

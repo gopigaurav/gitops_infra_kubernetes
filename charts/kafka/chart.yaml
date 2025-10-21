@@ -4,5 +4,5 @@ version: 0.1.0
 description: KRaft Kafka cluster wrapper
 dependencies:
   - name: kafka
-    version: 30.0.0           # choose compatible version in your environment
-    repository: https://charts.bitnami.com/bitnami
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 32.4.3

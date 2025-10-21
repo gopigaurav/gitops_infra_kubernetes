@@ -1,0 +1,16 @@
+# Minimal jenkins-values.yaml for local dev
+controller:
+  serviceType: NodePort
+  # Use a different NodePort to avoid collisions (30081 used by ArgoCD in this repo)
+  nodePort: 30000
+  # Increase resource requests/limits to avoid OOM during plugin installation
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+persistence:
+  enabled: false

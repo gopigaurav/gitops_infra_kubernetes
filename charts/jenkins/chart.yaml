@@ -1,0 +1,9 @@
+apiVersion: v2
+name: jenkins
+description: Jenkins CI/CD in Kubernetes
+type: application
+version: 0.1.0
+dependencies:
+  - name: jenkins
+    version: 5.3.3          # check latest at https://artifacthub.io/packages/helm/jenkinsci/jenkins
+    repository: https://charts.jenkins.io
