@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: producer
-  tag: "9"
+  tag: "10"
   pullPolicy: IfNotPresent
 service:
   type: NodePort
