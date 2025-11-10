@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: REPLACE_ME_REGISTRY/consumer
-  tag: "8"
+  tag: "9"
 autoscaling:
   enabled: true
   minReplicas: 1
