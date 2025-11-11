@@ -1,0 +1,7 @@
+/node_modules
+
+*.tfstate
+*.tfstate.*
+*.exe
+.terraform.lock.hcl
+windows_amd64

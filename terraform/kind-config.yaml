@@ -11,6 +11,9 @@ nodes:
         hostPort: 30010  # Producer
       - containerPort: 30011
         hostPort: 30011  # Consumer
+    extraMounts:
+      - hostPath: /gopig/jenkins-data
+        containerPath: /data/jenkins
 
       # if you need to expose the kafka outside the cluster
       # - containerPort: 9092

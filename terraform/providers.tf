@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.10"
     }
+    argocd = {
+      source  = "argoproj-labs/argocd"
+      version = "~> 7.0"
+    }
   }
 }
 
@@ -26,3 +30,10 @@ provider "helm" {
     config_path = "~/.kube/config"
   }
 }
+
+provider "argocd" {
+  server_addr = "localhost:30081" # NodePort from your argocd-values.yaml
+  auth_token  = var.argocd_token           # Generate using `argocd account generate-token --account admin`
+  insecure    = true                        # For local dev
+}
+  

@@ -11,6 +11,8 @@ controller:
     limits:
       cpu: 1000m
       memory: 1Gi
-
-persistence:
-  enabled: false
+  persistence:
+    enabled: true
+    existingClaim: ""
+    size: 10Gi
+    storageClass: "standard"   # or whatever your cluster supports

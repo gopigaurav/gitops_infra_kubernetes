@@ -19,18 +19,22 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: {{ .Values.containerPort }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.readinessProbe.path }}
-              port: {{ .Values.readinessProbe.port }}
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.livenessProbe.path }}
-              port: {{ .Values.livenessProbe.port }}
-            initialDelaySeconds: 30
-            periodSeconds: 20
+
+          env:
+            - name: KAFKA_BROKERS
+              value: "kafka.kafka.svc.cluster.local:9092"
+          # readinessProbe:
+          #   httpGet:
+          #     path: {{ .Values.readinessProbe.path }}
+          #     port: {{ .Values.readinessProbe.port }}
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: {{ .Values.livenessProbe.path }}
+          #     port: {{ .Values.livenessProbe.port }}
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}

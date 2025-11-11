@@ -28,5 +28,10 @@ controller:
 
 persistence:
   enabled: true
-  storageClass: standard
+  existingClaim: ""
+  storageClass: ""
   size: 10Gi
+  volumes:
+    - name: jenkins-home
+      hostPath:
+        path: /data/jenkins

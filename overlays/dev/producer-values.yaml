@@ -1,17 +1,46 @@
 replicaCount: 1
+
 image:
-  repository: producer
-  tag: dev-latest
+  repository: gopigaurav/producer
+  tag: 13
   pullPolicy: IfNotPresent
+
+containerPort: 3000
+
+# Optional probes (uncomment if your app supports /health endpoint)
+# readinessProbe:
+#   path: /
+#   port: 3000
+# livenessProbe:
+#   path: /
+#   port: 3000
+
+env:
+  - name: KAFKA_BROKERS
+    value: "kafka-broker-0.kafka-broker-headless.kafka.svc.cluster.local:9092"
+  - name: KAFKA_TOPIC
+    value: "events"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
 service:
   type: NodePort
-  nodePort: 30010
+  port: 3000         # <-- internal container port exposed by Service
+  nodePort: 30010    # <-- node port (unique per service)
+
 serviceMonitor:
   enabled: true
   namespace: monitoring
   interval: 15s
+
 hpa:
   enabled: true
   minReplicas: 1
   maxReplicas: 3
-  cpuUtilization: 50
+  targetCPUUtilizationPercentage: 50   # <-- correct HPA key name
