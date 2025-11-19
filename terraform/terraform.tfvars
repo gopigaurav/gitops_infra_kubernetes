@@ -1,1 +1,6 @@
 argocd_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjphcGlLZXkiLCJuYmYiOjE3NjI2MDIxNzAsImlhdCI6MTc2MjYwMjE3MCwianRpIjoiNjk5ZTdhZDctMjAzOS00NTE3LWI5M2EtZmU3N2JkZmI5MDczIn0.N1cIecnog26KhPX_GHWpfHvuckYSpFd8fz5DjBdiUyg"
+
+
+//
+ambient_mode_enabled = false
+letsencrypt_email = "admin@example.com"

@@ -1,0 +1,21 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  namespace: default
+spec: {}
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-app
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: app-service
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            methods: ["GET","POST"]

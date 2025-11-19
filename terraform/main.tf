@@ -127,68 +127,68 @@ resource "helm_release" "consumer" {
 }
 
 # Ingress
-resource "helm_release" "nginx_ingress" {
-  name             = "ingress-nginx"
-  repository       = "https://kubernetes.github.io/ingress-nginx"
-  chart            = "ingress-nginx"
-  namespace        = "ingress-nginx"
-  create_namespace = true
-  version          = "4.10.0"
+# resource "helm_release" "nginx_ingress" {
+#   name             = "ingress-nginx"
+#   repository       = "https://kubernetes.github.io/ingress-nginx"
+#   chart            = "ingress-nginx"
+#   namespace        = "ingress-nginx"
+#   create_namespace = true
+#   version          = "4.10.0"
 
-  values = [
-    file("${path.module}/ingress-values.yaml")
-  ]
+#   values = [
+#     file("${path.module}/ingress-values.yaml")
+#   ]
 
-  depends_on = [helm_release.kafka, null_resource.wait_for_cluster]
-}
+#   depends_on = [helm_release.kafka, null_resource.wait_for_cluster]
+# }
 
-# Ingress Rules
-resource "kubernetes_ingress_v1" "app_ingress" {
-  depends_on = [
-    helm_release.nginx_ingress, 
-    helm_release.producer, 
-    helm_release.consumer
-  ]
+# # Ingress Rules
+# resource "kubernetes_ingress_v1" "app_ingress" {
+#   depends_on = [
+#     helm_release.nginx_ingress, 
+#     helm_release.producer, 
+#     helm_release.consumer
+#   ]
 
-  metadata {
-    name = "app-ingress"
-    annotations = {
-      "kubernetes.io/ingress.class" = "nginx"
-    }
-  }
+#   metadata {
+#     name = "app-ingress"
+#     annotations = {
+#       "kubernetes.io/ingress.class" = "nginx"
+#     }
+#   }
 
-  spec {
-    rule {
-      host = "app.local"
-      http {
-        path {
-          path = "/producer"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "producer"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-        path {
-          path = "/consumer"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "consumer"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+#   spec {
+#     rule {
+#       host = "app.local"
+#       http {
+#         path {
+#           path = "/producer"
+#           path_type = "Prefix"
+#           backend {
+#             service {
+#               name = "producer"
+#               port {
+#                 number = 80
+#               }
+#             }
+#           }
+#         }
+#         path {
+#           path = "/consumer"
+#           path_type = "Prefix"
+#           backend {
+#             service {
+#               name = "consumer"
+#               port {
+#                 number = 80
+#               }
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
 
 variable "argocd_token" {
   description = "ArgoCD admin token"
@@ -289,6 +289,55 @@ resource "helm_release" "jenkins" {
   depends_on = [null_resource.kind_cluster, null_resource.kind_cluster, null_resource.wait_for_cluster]
 }
 
+//istio
+resource "helm_release" "istio_base" {
+  name       = "istio-base"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "base"
+  namespace  = "istio-system"
+  create_namespace = true
+  timeout = 600
+  atomic  = false
+  cleanup_on_fail = true
+  version    = "1.28.0"
+  depends_on = [null_resource.kind_cluster, null_resource.kind_cluster, null_resource.wait_for_cluster]
+}
+
+resource "helm_release" "istiod" {
+  name       = "istiod"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "istiod"
+  namespace  = "istio-system"
+  timeout = 600
+  depends_on = [null_resource.kind_cluster, null_resource.kind_cluster, null_resource.wait_for_cluster, helm_release.istio_base]
+  values = [file("${path.module}/../overlays/dev/istio-values.yaml")]
+}
+
+resource "helm_release" "istio_ingress" {
+  name       = "istio-ingress"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "gateway"
+  namespace  = "istio-system"
+  depends_on = [helm_release.istiod]
+  values = [<<EOF
+global:
+  proxy:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+EOF
+  ]
+}
+
+locals {
+  manifests = fileset("${path.module}/istio/manifests", "**/*.yaml")
+}
+
+resource "kubernetes_manifest" "istio_manifests" {
+  for_each = { for m in local.manifests : m => m }
+  manifest = yamldecode(file("${path.module}/manifests/${each.value}"))
+}
 
 #############################
 # Kubernetes Dashboard Helm Release
@@ -564,3 +613,46 @@ output "dashboard_token_instructions" {
 
 # kubectl exec -it kafka-broker-0 -n kafka -- \
 #   kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group consumer-group
+
+
+
+# Commands to check for the istio repos
+# helm repo add istio https://istio-release.storage.googleapis.com/charts
+# helm repo update
+# helm search repo istio
+
+
+# command to get the notes for istio-ingress
+# helm -n istio-system get notes istio-ingress
+
+
+# command to get the detailed logs or events
+# kubectl get events -n istio-system
+# kubectl get events -n istio-system --sort-by=.metadata.creationTimestamp
+
+
+# For Helm to install Istio, it must create:
+# Deployments
+# ReplicaSets
+# Services
+# EndpointSlices
+# Mutating webhooks
+# CRDs
+# ServiceAccounts
+# Roles/ClusterRoles
+# RoleBindings/ClusterRoleBindings
+
+
+# if facing issue with istio ingress
+# Installing metrics server
+# kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Command to check the username for clusterbinding
+# kubectl config view --minify -o jsonpath='{.users[0].name}'
+
+# Command to create the clusterbinding
+# kubectl create clusterrolebinding terraform-admin --clusterrole=cluster-admin --user=kind-dev-cluster 
+
+
+# command to patch metrics-patch.json
+# kubectl patch deployment metrics-server -n kube-system --patch-file patches/metrics-patch.json

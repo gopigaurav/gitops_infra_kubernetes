@@ -1,0 +1,8 @@
+global:
+  proxy:
+    autoInject: "disabled"
+pilot:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"

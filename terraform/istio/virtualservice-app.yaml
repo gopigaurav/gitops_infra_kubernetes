@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: app-vs
+  namespace: default
+spec:
+  hosts:
+    - app.example.com
+  gateways:
+    - app-gateway
+  http:
+    - route:
+        - destination:
+            host: app
+            subset: v1
+          weight: 50
+        - destination:
+            host: app
+            subset: v2
+          weight: 50
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: "gateway-error,connect-failure,refused-stream"
+      timeout: 5s

@@ -1,0 +1,22 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: app-v2
+#   namespace: default
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: app
+#       version: v2
+#   template:
+#     metadata:
+#       labels:
+#         app: app
+#         version: v2
+#     spec:
+#       containers:
+#         - name: app
+#           image: nginx:mainline
+#           ports:
+#             - containerPort: 80
