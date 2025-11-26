@@ -1,0 +1,12 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: to-istio-http-with-plugin
+  namespace: kong
+spec:
+  protocols: ["http"]
+  paths: ["/plugin"]
+  service:
+    name: istio-ingress-upstream
+  plugins:
+    - name: rate-limit-30pm

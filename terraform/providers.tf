@@ -23,9 +23,9 @@ provider "kind" {}
 
 provider "kubernetes" {
   config_path = "~/.kube/config"
-  host = var.cluster_endpoint
-  token= data.kubernetes_secret.terraform_admin.data["token"]
-  cluster_ca_certificate = base64decode(var.cluster_ca)
+  # host = var.cluster_endpoint
+  # token= data.kubernetes_secret.terraform_admin.data["token"]
+  # cluster_ca_certificate = base64decode(var.cluster_ca)
 }
 
 provider "helm" {

@@ -1,0 +1,18 @@
+service:
+  type: NodePort
+  ports:
+    - name: http2
+      port: 80
+      targetPort: 8080
+      nodePort: 31080   # changed, safe
+    - name: https
+      port: 443
+      targetPort: 8443
+      nodePort: 31443   # changed, safe
+
+global:
+  proxy:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"

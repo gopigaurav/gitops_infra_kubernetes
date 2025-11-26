@@ -289,6 +289,22 @@ resource "helm_release" "jenkins" {
   depends_on = [null_resource.kind_cluster, null_resource.kind_cluster, null_resource.wait_for_cluster]
 }
 
+
+// metrics-service
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  namespace  = "kube-system"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  version    = "3.12.0"
+
+  values = [file("${path.module}/metrics/values.yaml")]
+
+  wait       = true
+  timeout    = 300
+  create_namespace = false
+}
+
 //istio
 resource "helm_release" "istio_base" {
   name       = "istio-base"
@@ -319,14 +335,8 @@ resource "helm_release" "istio_ingress" {
   chart      = "gateway"
   namespace  = "istio-system"
   depends_on = [helm_release.istiod]
-  values = [<<EOF
-global:
-  proxy:
-    resources:
-      requests:
-        cpu: "100m"
-        memory: "128Mi"
-EOF
+  values = [
+    file("${path.module}/istio/istio-ingress-values.yaml")
   ]
 }
 
@@ -337,6 +347,55 @@ locals {
 resource "kubernetes_manifest" "istio_manifests" {
   for_each = { for m in local.manifests : m => m }
   manifest = yamldecode(file("${path.module}/manifests/${each.value}"))
+}
+
+variable "kong_chart_version" {
+  type    = string
+  default = "2.13.0"
+}
+
+
+resource "helm_release" "kong" {
+  name       = "kong"
+  repository = "https://charts.konghq.com"
+  chart      = "ingress"
+  namespace  = "kong"
+  create_namespace = true
+  dependency_update = true
+
+  values = [
+    file("${path.module}/kong/values.yaml")
+  ]
+
+  timeout = 600
+  wait    = true
+}
+# Apply KongService / KongRoute CRs (declarative) using kubernetes_manifest
+# resource "kubernetes_manifest" "kong_crs" {
+#   for_each = tomap({
+#     kong_to_istio = "${path.module}/kong/kong-to-istio.yaml"
+#   })
+
+#   manifest = yamldecode(file(each.value))
+
+#   # ensure Kong CRDs & controller are ready first
+#   depends_on = [helm_release.kong, helm_release.istio_ingress]
+# }
+
+resource "kubernetes_manifest" "kong_crs" {
+  for_each = {
+    for f in fileset("${path.module}/k8s/kong/crds", "*.yaml") :
+    f => f
+  }
+
+  manifest = yamldecode(
+    file("${path.module}/k8s/kong/crds/${each.value}")
+  )
+
+  depends_on = [
+    helm_release.kong,
+    helm_release.istio_ingress, # ensures upstream exists
+  ]
 }
 
 #############################
@@ -656,3 +715,32 @@ output "dashboard_token_instructions" {
 
 # command to patch metrics-patch.json
 # kubectl patch deployment metrics-server -n kube-system --patch-file patches/metrics-patch.json
+
+
+# command to check the istio pod container status
+# kubectl logs -n istio-system istio-ingress-86f8cb45c5-m9gqq --all-containers
+
+
+# Commands to check the istio ingress services
+# kubectl get pods -n istio-system
+# kubectl get svc -n istio-system istio-ingress
+# kubectl get apiservice v1beta1.metrics.k8s.io -o yaml
+# kubectl logs -n kube-system deploy/metrics-server
+# kubectl get pods -n kube-system -o wide | grep metrics
+# kubectl get events -n istio-system --sort-by=.metadata.creationTimestamp
+# kubectl describe pod istio-ingress-86f8cb45c5-2svpr -n istio-system
+
+
+# command to enable sidecar in the namespace
+# kubectl label namespace <your-namespace> istio-injection=enabled --overwrite
+
+
+# commands to add the repo to helm
+# helm repo add kong https://charts.konghq.com
+
+# helm command to update the helm
+# helm repo update
+
+
+# helm command to search
+#  helm search repo kong/kong

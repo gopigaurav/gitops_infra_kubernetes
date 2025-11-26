@@ -1,0 +1,14 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: to-istio-http
+  namespace: kong
+spec:
+  protocols:
+    - http
+  paths:
+    - /
+  strip_path: false
+  preserve_host: true
+  service:
+    name: istio-ingress-upstream

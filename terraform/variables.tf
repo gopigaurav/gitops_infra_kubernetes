@@ -15,3 +15,8 @@ variable "letsencrypt_email" {
   type    = string
   default = "admin@example.com"
 }
+
+# variable "kong_chart_version" {
+#   type    = string
+#   default = "2.13.0"
+# }

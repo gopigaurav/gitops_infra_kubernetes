@@ -1,0 +1,50 @@
+# values.yaml - Kong Helm chart (kong/kong)
+kong:
+  # Use a specific version tag
+  image:
+    tag: "3.5" 
+  
+  # Environment variables for the Kong container
+  env:
+    log_level: info
+
+replicaCount: 1
+
+# Run in DB-less mode
+env:
+  database: "off"
+
+proxy:
+  enabled: true
+  type: NodePort
+  http:
+    nodePort: 31080    # pick free ports in 30000-32767
+  tls:
+    enabled: true
+    nodePort: 31443
+
+admin:
+  enabled: true
+  type: NodePort
+  http:
+    nodePort: 32080
+  # set password only for production
+  # This opens Admin API; lock it down for production
+
+ingressController:
+  enabled: true
+  installCRDs: true  # installs Service/Route CRDs
+
+service:
+  annotations: {}
+  labels: {}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# make sure to allow Envoy/etc to run in kind if using special settings

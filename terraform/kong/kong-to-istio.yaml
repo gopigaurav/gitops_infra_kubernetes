@@ -1,0 +1,57 @@
+# k8s/kong/kong-to-istio.yaml
+# this file has been separated and put in the crds folder
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongService
+metadata:
+  name: istio-ingress-upstream
+  namespace: kong
+spec:
+  protocol: http
+  host: istio-ingress.istio-system.svc.cluster.local
+  port: 80
+  path: /
+
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: to-istio-http
+  namespace: kong
+spec:
+  protocols:
+    - http
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  hosts:
+    - "*"
+  paths:
+    - /
+  strip_path: false
+  preserve_host: true
+  service:
+    name: istio-ingress-upstream
+---
+# Optional: attach a simple rate-limiting plugin to this route
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rate-limit-30pm
+  namespace: kong
+plugin: rate-limiting
+config:
+  minute: 2
+  policy: local
+---
+# Attach plugin to route by name (alternative is listing plugin in route spec)
+apiVersion: configuration.konghq.com/v1
+kind: KongRoute
+metadata:
+  name: to-istio-http-with-plugin
+  namespace: kong
+spec:
+  protocols: ["http"]
+  paths: ["/plugin"]
+  service:
+    name: istio-ingress-upstream
+  plugins:
+    - name: rate-limit-30pm

@@ -1,0 +1,10 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongService
+metadata:
+  name: istio-ingress-upstream
+  namespace: kong
+spec:
+  protocol: http
+  host: istio-ingress.istio-system.svc.cluster.local
+  port: 80
+  path: /
